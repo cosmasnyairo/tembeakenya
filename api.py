@@ -70,7 +70,7 @@ def categories():
     return jsonify({"categories": categories}), 200
 
 
-@app.route('/art_and_culture', methods=['GET'])
+@app.route('/art_and_culture', methods=['POST'])
 def art_and_culture():
     """
     Fetch Art and Culture Destinations:
@@ -78,7 +78,7 @@ def art_and_culture():
     return fetch_values('art_and_culture')
 
 
-@app.route('/beaches', methods=['GET'])
+@app.route('/beaches', methods=['POST'])
 def beaches():
     """
     Fetch Beach Destinations:
@@ -86,7 +86,7 @@ def beaches():
     return fetch_values('beaches')
 
 
-@app.route('/kid_friendly', methods=['GET'])
+@app.route('/kid_friendly', methods=['POST'])
 def kid_friendly():
     """
     Fetch Kid friendly Destinations:
@@ -94,7 +94,7 @@ def kid_friendly():
     return fetch_values('kid_friendly')
 
 
-@app.route('/museums', methods=['GET'])
+@app.route('/museums', methods=['POST'])
 def museums():
     """
     Fetch Museum Destinations:
@@ -102,7 +102,7 @@ def museums():
     return fetch_values('museums')
 
 
-@app.route('/outdoors', methods=['GET'])
+@app.route('/outdoors', methods=['POST'])
 def outdoors():
     """
     Fetch Outdoors Destinations:
