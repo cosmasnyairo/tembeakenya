@@ -1,7 +1,14 @@
 import csv
+
 from flask import Flask, jsonify, request
+from re import search, IGNORECASE
+
 
 app = Flask(__name__)
+
+
+filenames = ['art_and_culture', 'beaches',
+             'kid_friendly', 'museums', 'outdoors']
 
 
 def fetch_values(filename):
@@ -59,18 +66,42 @@ def categories():
     Fetch Destination categories
     """
     categories = []
-    filenames = ['art_and_culture', 'beaches',
-                 'kid_friendly', 'museums', 'outdoors']
 
     for file in filenames:
-        
         with open('data/{}.csv'.format(file), newline='', encoding='utf-8') as f:
-            reader=csv.reader(f)
+            reader = csv.reader(f)
             next(reader)
             row_count = sum(1 for row in reader)
             categories.append({'categories': file, 'length': row_count})
 
     return jsonify(categories), 200
+
+
+@app.route('/searchdestination', methods=['POST'])
+def searchdestination():
+    """
+    Search a destination from the files.
+
+    ...
+    """
+    
+    values = request.get_json()
+    if not values:
+        response = {'message': 'No data found!'}
+        return jsonify(response), 400
+    required_fields = ['query']
+    if not all(f in values for f in required_fields):
+        response = {'message': 'Required data missing!'}
+        return jsonify(response), 400
+
+    query = values['query']
+    found = ()
+    for file in filenames:
+        with open('data/{}.csv'.format(file), newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            found = [row for row in reader if search(
+                query, str(row['title']), flags=IGNORECASE)]
+    return jsonify(found), 200
 
 
 @app.route('/art_and_culture', methods=['POST'])
