@@ -63,11 +63,14 @@ def categories():
                  'kid_friendly', 'museums', 'outdoors']
 
     for file in filenames:
+        
         with open('data/{}.csv'.format(file), newline='', encoding='utf-8') as f:
-            row_count = sum(1 for row in csv.reader(f))
+            reader=csv.reader(f)
+            next(reader)
+            row_count = sum(1 for row in reader)
             categories.append({'categories': file, 'length': row_count})
 
-    return jsonify({"categories": categories}), 200
+    return jsonify(categories), 200
 
 
 @app.route('/art_and_culture', methods=['POST'])
