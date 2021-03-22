@@ -1,6 +1,8 @@
 import csv
 
 from flask import Flask, jsonify, request
+from re import search, IGNORECASE
+
 
 app = Flask(__name__)
 
@@ -82,7 +84,7 @@ def searchdestination():
 
     ...
     """
-
+    
     values = request.get_json()
     if not values:
         response = {'message': 'No data found!'}
@@ -93,16 +95,13 @@ def searchdestination():
         return jsonify(response), 400
 
     query = values['query']
-    results=[]
-    destinations=[]
+    found = ()
     for file in filenames:
         with open('data/{}.csv'.format(file), newline='', encoding='utf-8') as f:
             reader = csv.DictReader(f)
-            results.append([row for row in reader if query.lower() in row['title'].lower()])
-    
-    for r in results:
-        [destinations.append(row) for row in r if row not in destinations and row!=[]]
-    return jsonify(destinations), 200
+            found = [row for row in reader if search(
+                query, str(row['title']), flags=IGNORECASE)]
+    return jsonify(found), 200
 
 
 @app.route('/art_and_culture', methods=['POST'])
