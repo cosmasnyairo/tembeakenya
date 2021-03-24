@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:tembea_kenya/widgets/error.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class MyWebview extends StatefulWidget {
@@ -14,6 +15,7 @@ class MyWebview extends StatefulWidget {
 }
 
 class MyWebviewState extends State<MyWebview> {
+  bool _erroroccurred = false;
   bool _isloading = false;
   @override
   void initState() {
@@ -26,23 +28,29 @@ class MyWebviewState extends State<MyWebview> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: Stack(children: [
-        WebView(
-          initialUrl: widget.url,
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (val) {
-            setState(() {
-              _isloading = true;
-            });
-          },
-          onPageFinished: (val) {
-            setState(() {
-              _isloading = false;
-            });
-          },
-        ),
-        _isloading ? Center(child: CircularProgressIndicator()) : SizedBox()
-      ]),
+      body: _erroroccurred
+          ? ErrorPage(
+              ontap: () async {
+                setState(() => _erroroccurred = false);
+                showwebview();
+              },
+              devicespecs: MediaQuery.of(context).size,
+            )
+          : Stack(children: [
+              showwebview(),
+              _isloading
+                  ? Center(child: CircularProgressIndicator())
+                  : SizedBox()
+            ]),
+    );
+  }
+
+  WebView showwebview() {
+    return WebView(
+      initialUrl: widget.url,
+      javascriptMode: JavascriptMode.unrestricted,
+      onWebViewCreated: (val) => setState(() => _isloading = true),
+      onPageFinished: (val) => setState(() => _isloading = false),
     );
   }
 }

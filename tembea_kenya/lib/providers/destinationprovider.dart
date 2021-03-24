@@ -15,17 +15,23 @@ class DestinationProvider with ChangeNotifier {
   Future<List<Categories>> getCategories() async {
     final prefs = await SharedPreferences.getInstance();
     final categories = prefs.getStringList('categories') ?? [];
-    if (categories.isEmpty) {
-      final response = await http.get(Uri.parse('$url/categories'));
-      json.decode(response.body).forEach(
-            (element) => categories.add(jsonEncode(Categories(
-              name: element['categories'],
-              length: element['length'],
-            ))),
-          );
-      prefs.setStringList('categories', categories);
-    }
 
+    if (categories.isEmpty) {
+      try {
+        final response = await http.get(Uri.parse('$url/categories'), headers: {
+          "Content-Type": "application/json",
+        });
+        json.decode(response.body).forEach(
+              (element) => categories.add(jsonEncode(Categories(
+                name: element['categories'],
+                length: element['length'],
+              ))),
+            );
+        prefs.setStringList('categories', categories);
+      } on Exception catch (e) {
+        throw e;
+      }
+    }
     return categories
         .map(
             (categoriesjson) => Categories.fromJson(jsonDecode(categoriesjson)))
@@ -56,7 +62,7 @@ class DestinationProvider with ChangeNotifier {
             ),
           );
     } on Exception catch (e) {
-      print(e);
+      throw e;
     }
     notifyListeners();
     return _destinations;
@@ -67,9 +73,7 @@ class DestinationProvider with ChangeNotifier {
       final response = await http.post(
         Uri.parse('$url/$name'),
         body: json.encode({'limit': 9, 'offset': offset}),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: {"Content-Type": "application/json"},
       );
       json.decode(response.body).forEach(
             (element) => _destinations.add(
@@ -85,7 +89,8 @@ class DestinationProvider with ChangeNotifier {
             ),
           );
     } on Exception catch (e) {
-      print(e);
+      print('exception $e');
+      throw e;
     }
     notifyListeners();
     return _destinations;
@@ -132,19 +137,20 @@ class DestinationProvider with ChangeNotifier {
     return bookmarks.contains(jsonEncode(destination));
   }
 
-  Future<void> addBookmarks(Destination destination) async {
+  Future<void> bookmarkDestination(Destination destination, bool add) async {
     final prefs = await SharedPreferences.getInstance();
     final bookmarks = prefs.getStringList('destinations') ?? [];
-    bookmarks.add(jsonEncode(destination));
+    add
+        ? bookmarks.add(jsonEncode(destination))
+        : bookmarks.remove(jsonEncode(destination));
+
     prefs.setStringList('destinations', bookmarks);
     notifyListeners();
   }
 
-  Future<void> removeBookmarks(Destination destination) async {
-    final prefs = await SharedPreferences.getInstance();
-    final bookmarks = prefs.getStringList('destinations') ?? [];
-    bookmarks.remove(jsonEncode(destination));
-    prefs.setStringList('destinations', bookmarks);
+  Future<void> clearBookmarks() async {
+    await SharedPreferences.getInstance()
+        .then((value) => value.remove('destinations'));
     notifyListeners();
   }
 }

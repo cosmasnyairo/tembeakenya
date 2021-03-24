@@ -62,17 +62,21 @@ class DestinationList extends StatelessWidget {
             ),
           ),
           title: Text(destinations[i].title.trim()),
-          subtitle: Row(
+          subtitle: ListView(
+            shrinkWrap: true,
+            physics: ClampingScrollPhysics(),
             children: [
-              RatingBarIndicator(
-                rating: double.parse(destinations[i].review),
-                itemBuilder: (_, $) =>
-                    Icon(Icons.star, color: _theme.accentColor),
-                itemCount: 5,
-                itemSize: 20.0,
-                direction: Axis.horizontal,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: RatingBarIndicator(
+                  rating: double.parse(destinations[i].review),
+                  itemBuilder: (_, $) =>
+                      Icon(Icons.star, color: _theme.accentColor),
+                  itemCount: 5,
+                  itemSize: 20,
+                  direction: Axis.horizontal,
+                ),
               ),
-              SizedBox(width: 5),
               Text(
                 '${destinations[i].review} (${destinations[i].noofreviews})',
               ),

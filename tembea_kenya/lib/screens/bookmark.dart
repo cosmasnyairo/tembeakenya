@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:tembea_kenya/models/destination.dart';
 import 'package:tembea_kenya/providers/destinationprovider.dart';
-import 'package:tembea_kenya/widgets/custom_tile.dart';
 import 'package:tembea_kenya/widgets/destination_list.dart';
 
 class BookMarkPage extends StatefulWidget {
@@ -16,16 +14,12 @@ class _BookMarkPageState extends State<BookMarkPage> {
   List<Destination> bookmarkeddestinations = [];
   @override
   void didChangeDependencies() async {
-    setState(() {
-      _isloading = true;
-    });
+    setState(() => _isloading = true);
 
     bookmarkeddestinations =
         await Provider.of<DestinationProvider>(context, listen: true)
             .getBookmarks();
-    setState(() {
-      _isloading = false;
-    });
+    setState(() => _isloading = false);
     super.didChangeDependencies();
   }
 
@@ -41,10 +35,33 @@ class _BookMarkPageState extends State<BookMarkPage> {
               shrinkWrap: true,
               padding: EdgeInsets.all(20),
               children: [
+                bookmarkeddestinations.isEmpty
+                    ? SizedBox()
+                    : Container(
+                        padding: EdgeInsets.all(5),
+                        alignment: Alignment.topRight,
+                        child: TextButton.icon(
+                          icon: Icon(
+                            Icons.delete,
+                            color: Theme.of(context).errorColor,
+                          ),
+                          label: Text('Clear'),
+                          onPressed: () async {
+                            setState(() => _isloading = true);
+                            await Provider.of<DestinationProvider>(context,
+                                    listen: false)
+                                .clearBookmarks();
+                            setState(() => _isloading = false);
+                          },
+                        ),
+                      ),
                 Text(
-                  'You have ${bookmarkeddestinations.length} bookmarked destinations',
-                  textAlign: TextAlign.center,
-                ),
+                    bookmarkeddestinations.length == 0
+                        ? 'No bookmarked destination'
+                        : bookmarkeddestinations.length == 1
+                            ? '${bookmarkeddestinations.length} bookmarked destination'
+                            : '${bookmarkeddestinations.length} bookmarked destinations',
+                    textAlign: TextAlign.center),
                 SizedBox(height: 10),
                 DestinationList(bookmarkeddestinations),
                 SizedBox(height: 20),

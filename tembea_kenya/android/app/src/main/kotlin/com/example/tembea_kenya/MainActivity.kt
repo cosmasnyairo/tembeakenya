@@ -1,4 +1,4 @@
-package com.example.tembea_kenya
+package com.tembeakenya.tembea_kenya
 
 import io.flutter.embedding.android.FlutterActivity
 
