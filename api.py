@@ -1,6 +1,6 @@
 import csv
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
@@ -56,6 +56,12 @@ def index():
     Index page
     """
     return 'Welcome to the index page!'
+
+
+@app.route('/policy', methods=['GET'])
+def policy():
+    
+    return render_template('policy.html')
 
 
 @app.route('/categories', methods=['GET'])
