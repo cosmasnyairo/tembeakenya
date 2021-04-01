@@ -31,7 +31,7 @@ flutter_icons:
 
 flutter_native_splash:
   color: "#2F4858"
-  image: "assets/splash.png"
+  image: "assets/logo.png"
 
 flutter:
   uses-material-design: true
