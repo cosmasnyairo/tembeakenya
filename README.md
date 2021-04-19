@@ -61,5 +61,5 @@ Get the app from [Play store](https://play.google.com/store/apps/details?id=com.
 ## Author
 
 - Name: Cosmas Nyairo
-- Website: <https://cosmasnyairo.herokuapp.com>
+- Website: <https://cosmasnyairo.github.io>
 - Email : nyairocosmas@gmail.com
